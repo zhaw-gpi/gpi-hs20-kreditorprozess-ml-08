@@ -69,15 +69,7 @@ public class PostInvoiceDelegate implements JavaDelegate {
 
                 // Request 3: Eigentlicher Request (PUT)
                 response = restTemplate.exchange("http://localhost:8070/api/invoices/{invoiceId}/creditor", HttpMethod.PUT, httpEntity, String.class, invoiceNr);
-                if(!response.getStatusCode().equals(HttpStatus.NO_CONTENT)){
-                    throw new Exception("Creditor for invoice could not be set");
-                }
-            } else {
-                throw new Exception("Invoice not created");
             }
-        } else {
-            throw new Exception("No creditor found");
-        }
-    }
-    
+        } 
+    }    
 }
