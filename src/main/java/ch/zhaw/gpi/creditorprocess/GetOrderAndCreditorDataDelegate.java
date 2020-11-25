@@ -19,13 +19,12 @@ public class GetOrderAndCreditorDataDelegate implements JavaDelegate {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:8070/api/orders/search/findByReferenceNumber?referenceNumber={referenceNr}", HttpMethod.GET, null, String.class, referenceNr);
+        Boolean orderFound;
 
-        Boolean orderFound = response.getStatusCode().equals(HttpStatus.OK);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8070/api/orders/search/findByReferenceNumber?referenceNumber={referenceNr}", HttpMethod.GET, null, String.class, referenceNr);
+            orderFound = true;
 
-        execution.setVariable("orderFound", orderFound);
-
-        if(orderFound){
             JSONObject orderAsJsonObject = new JSONObject(response.getBody());
             execution.setVariable("orderAmount", orderAsJsonObject.getLong("amount"));
             execution.setVariable("costCenterMgr", orderAsJsonObject.getString("cstCtMgr"));
@@ -35,7 +34,11 @@ public class GetOrderAndCreditorDataDelegate implements JavaDelegate {
             JSONObject creditorAsJsonObject = new JSONObject(response.getBody());
             execution.setVariable("creditorOrderCount", creditorAsJsonObject.getInt("ordersCnt"));
             execution.setVariable("creditorInvoiceReclamationCount", creditorAsJsonObject.getInt("invoicingReclamationCnt"));
+        } catch (Exception e) {
+            orderFound = false;
         }
+
+        execution.setVariable("orderFound", orderFound);
     }
     
 }
